@@ -1,0 +1,83 @@
+# LLM Inference Configuration
+
+inference:
+  # Model settings
+  model_name: "meta-llama/Llama-2-7b-hf"
+  tensor_parallel_size: 4
+  pipeline_parallel_size: 1
+  
+  # Quantization
+  quantization: "int8"  # Options: int8, int4, awq, gptq, null
+  calibration_samples: 512
+  
+  # Batching
+  max_num_batched_tokens: 8192
+  max_num_seqs: 256
+  max_batch_size: 256
+  
+  # GPU settings
+  gpu_memory_utilization: 0.9
+  max_model_len: 4096
+  
+  # Optimization
+  enable_chunked_prefill: true
+  enable_prefix_caching: true
+  max_num_seqs_in_cache: 1024
+
+optimization:
+  # Attention optimization
+  enable_flash_attention: true
+  attention_backend: "FLASH_ATTN"  # FLASH_ATTN, XFORMERS, ROCM_FLASH
+  
+  # KV cache
+  enable_kv_cache: true
+  kv_cache_dtype: "auto"  # auto, fp8, fp16
+  
+  # Context length
+  max_context_length: 4096
+  sliding_window: null
+  
+  # Compilation
+  torch_compile: false
+  compile_mode: "default"
+
+serving:
+  # Server config
+  host: "0.0.0.0"
+  port: 8000
+  workers: 1
+  
+  # Timeouts
+  request_timeout: 300
+  batch_timeout_ms: 50
+  max_waiting_tokens: 20
+  
+  # Rate limiting
+  max_requests_per_minute: 1000
+  max_tokens_per_minute: 100000
+
+monitoring:
+  # Metrics
+  enable_metrics: true
+  metrics_port: 9090
+  prometheus_multiproc_dir: "/tmp/prometheus"
+  
+  # Tracing
+  enable_tracing: false
+  jaeger_endpoint: "http://jaeger:14268/api/traces"
+  
+  # Logging
+  log_level: "INFO"
+  log_requests: true
+  log_responses: false
+
+caching:
+  # Response caching
+  enable_cache: true
+  cache_backend: "redis"
+  cache_ttl: 3600
+  
+  # Redis config
+  redis_host: "redis"
+  redis_port: 6379
+  redis_db: 0
