@@ -1,0 +1,115 @@
+version: '3.8'
+
+services:
+  # Main LLM serving service
+  llm-server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.cuda
+    container_name: llm-serving
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_NAME=${MODEL_NAME:-meta-llama/Llama-2-7b-hf}
+      - TENSOR_PARALLEL_SIZE=${TENSOR_PARALLEL_SIZE:-4}
+      - QUANTIZATION_MODE=${QUANTIZATION_MODE:-int8}
+      - MAX_BATCH_SIZE=${MAX_BATCH_SIZE:-256}
+      - GPU_MEMORY_UTILIZATION=${GPU_MEMORY_UTILIZATION:-0.9}
+      - ENABLE_FLASH_ATTENTION=${ENABLE_FLASH_ATTENTION:-true}
+      - ENABLE_KV_CACHE=${ENABLE_KV_CACHE:-true}
+    volumes:
+      - ./models:/models
+      - ./logs:/app/logs
+      - huggingface_cache:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    depends_on:
+      - llm-server
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./config/grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+
+  # Jaeger for distributed tracing (optional)
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    ports:
+      - "6831:6831/udp"
+      - "16686:16686"
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+
+  # NGINX load balancer
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-lb
+    ports:
+      - "80:80"
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - llm-server
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:alpine
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+volumes:
+  huggingface_cache:
+  prometheus_data:
+  grafana_data:
+  redis_data:
+
+networks:
+  default:
+    name: llm-serving-network
