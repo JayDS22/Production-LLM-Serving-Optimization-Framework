@@ -1,0 +1,28 @@
+# Full dependencies including vLLM and advanced features
+# Start with core requirements
+-r requirements-core.txt
+
+# vLLM - for production performance
+# Install separately: pip install vllm (requires CUDA)
+# vllm>=0.2.7
+
+# Advanced optimization (optional)
+# flash-attn>=2.3.0  # Requires specific CUDA version
+# triton>=2.1.0
+
+# TensorRT (install separately based on CUDA version)
+# tensorrt>=8.6.0
+
+# Advanced quantization (optional)
+# auto-gptq>=0.4.2
+# autoawq>=0.1.6
+
+# Distributed tracing (optional)
+opentelemetry-api==1.21.0
+opentelemetry-sdk==1.21.0
+
+# Redis for caching (optional)
+redis==5.0.1
+
+# GPU monitoring (optional)
+# nvidia-ml-py3==7.352.0
