@@ -215,7 +215,7 @@ kubectl autoscale deployment llm-serving --cpu-percent=70 --min=3 --max=20
 
 **Configuration:**
 ```bash
-# .env
+# env
 MODEL_NAME=codellama/CodeLlama-13b-Instruct-hf
 TENSOR_PARALLEL_SIZE=4
 QUANTIZATION_MODE=int8
@@ -386,7 +386,7 @@ MAX_BATCH_SIZE=256
 GPU_MEMORY_UTILIZATION=0.95
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues & Solutions
 
@@ -431,7 +431,7 @@ pip install -r requirements-core.txt --force-reinstall
 python scripts/test_installation.py
 ```
 
-## 🚀 Deployment
+## Deployment
 
 ### Local Development
 ```bash
@@ -470,7 +470,7 @@ docker-compose -f docker-compose.yml up -d
 docker-compose up -d --scale llm-server=4
 ```
 
-## 📊 Monitoring
+## Monitoring
 
 ### Prometheus Metrics
 Access at `http://localhost:9090`
@@ -511,7 +511,7 @@ curl http://localhost:8000/stats
 }
 ```
 
-## 🧩 Project Structure
+## Project Structure
 
 ```
 llm-serving-framework/
@@ -560,7 +560,7 @@ llm-serving-framework/
 └── README.md                   # This file
 ```
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md).
 
@@ -579,24 +579,24 @@ make format
 make lint
 ```
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **vLLM Team** - Exceptional inference engine
 - **HuggingFace** - Model hosting and transformers library
 - **FastAPI** - Modern web framework
 - **NVIDIA** - CUDA and GPU optimization tools
 
-## 📧 Support
+## Support
 
 - **Issues**: [GitHub Issues](https://github.com/yourusername/llm-serving-framework/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/yourusername/llm-serving-framework/discussions)
 - **Email**: your.email@example.com
 
-## 🎯 Use Cases
+## Use Cases
 
 ### For Cohere/OpenAI-style API Platform
 ```python
@@ -619,7 +619,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 # Efficient GPU memory management
 ```
 
-## 🔗 Related Projects
+## Related Projects
 
 - [vLLM](https://github.com/vllm-project/vllm) - High-throughput LLM serving
 - [Text Generation Inference](https://github.com/huggingface/text-generation-inference) - HF's serving solution
@@ -627,6 +627,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ for production LLM serving**
+**Built with for production LLM serving**
 
-*Star ⭐ this repo if you find it useful!*
+*Star  this repo if you find it useful!*
